@@ -78,6 +78,7 @@ export default function App() {
         />
         
         <TextInput label='Rua' mode='outlined' value={dados.logradouro || ''} onChangeText={(value) => setDados({ ...dados, logradouro: value })} style={styles.input} />
+        
         <TextInput label='Número' mode='outlined' value={numero} onChangeText={setNumero} style={styles.input} />
         <TextInput label='Complemento' mode='outlined' value={complemento} onChangeText={setComplemento} style={styles.input} />
         <TextInput label='Bairro' mode='outlined' value={dados.bairro || ''} onChangeText={(value) => setDados({ ...dados, bairro: value })} style={styles.input} />
