@@ -13,9 +13,10 @@ export default function App() {
   let [complemento, setComplemento] = useState('');
   const [selectedValue, setSelectedValue] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
+  const [errorModalVisible, setErrorModalVisible] = useState(false);
 
   const buscacep = (xcep) => {
-    if (xcep.trim() !== '') {
+    if (xcep.trim() !== '' && xcep.length === 8) { // Verifica se o CEP tem exatamente 8 dígitos
       setDados({});
       setSelectedValue('');
       let url = `https://viacep.com.br/ws/${xcep}/json/`;
@@ -23,7 +24,9 @@ export default function App() {
       fetch(url)
         .then((resp) => resp.json())
         .then((dados) => {
-          if (!dados.erro) {
+          if (dados.erro) {
+            setErrorModalVisible(true); // Exibe o modal de erro se o CEP for inválido
+          } else {
             setDados(dados);
             setSelectedValue(dados.uf);
           }
@@ -70,7 +73,9 @@ export default function App() {
           onChangeText={(value) => {
             const numericValue = value.replace(/[^0-9]/g, '');
             setCep(numericValue);
-            buscacep(numericValue);
+            if (numericValue.length === 8) {
+              buscacep(numericValue); // Inicia a busca do CEP só quando tiver 8 dígitos
+            }
           }}
           keyboardType='numeric'
           maxLength={8}
@@ -126,7 +131,8 @@ export default function App() {
         </View>
         <StatusBar style='auto' />
       </ScrollView>
-          {/* Modal */}
+      
+      {/* Modal de Sucesso */}
       <Modal
         animationType="slide"
         transparent={true}
@@ -142,9 +148,23 @@ export default function App() {
           </View>
         </View>
       </Modal>
-
-
-
+      
+      {/* Modal de Erro - CEP Inválido */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={errorModalVisible}
+        onRequestClose={() => setErrorModalVisible(false)}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalText}>CEP inexistente!</Text>
+            <TouchableOpacity onPress={() => setErrorModalVisible(false)} style={styles.modalButton}>
+              <Text style={styles.modalButtonText}>Fechar</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </PaperProvider>
   );
 }
